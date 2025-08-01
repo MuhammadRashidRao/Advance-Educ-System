@@ -1,0 +1,40 @@
+settings/local.py
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+staticfiles/
+
+# Environments
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python
+*.py[cod]
+__pycache__/
+.pytest_cache/
+.coverage
+dist/
+build/
+*.egg-info/
+*.manifest
+*.spec
+
+# Jupyter & Pycharm
+.ipynb_checkpoints/
+.idea/
+
+# OS & Editor
+.DS_Store
+*.swp
+*~
+~$*
+Thumbs.db
