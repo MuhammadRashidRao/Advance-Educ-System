@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Education System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-user text-primary"></i> Profile Settings
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Profile Picture Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    {% if user.userprofile.profile_picture %}
+                        <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle mb-3" width="150" height="150">
+                    {% else %}
+                        <i class="fas fa-user-circle text-primary display-1 mb-3"></i>
+                    {% endif %}
+                    <h5 class="card-title">{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted">{{ user.email }}</p>
+                    <p class="text-muted">Member since {{ user.date_joined|date:"F Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Form Section -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-edit"></i> Edit Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- User Information -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.first_name.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user"></i> First Name
+                                </label>
+                                {{ user_form.first_name }}
+                                {% if user_form.first_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ user_form.first_name.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.last_name.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user"></i> Last Name
+                                </label>
+                                {{ user_form.last_name }}
+                                {% if user_form.last_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ user_form.last_name.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ user_form.email.id_for_label }}" class="form-label">
+                                <i class="fas fa-envelope"></i> Email Address
+                            </label>
+                            {{ user_form.email }}
+                            {% if user_form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ user_form.email.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+
+                        <!-- Profile Information -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ profile_form.phone_number.id_for_label }}" class="form-label">
+                                    <i class="fas fa-phone"></i> Phone Number
+                                </label>
+                                {{ profile_form.phone_number }}
+                                {% if profile_form.phone_number.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ profile_form.phone_number.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ profile_form.date_of_birth.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar"></i> Date of Birth
+                                </label>
+                                {{ profile_form.date_of_birth }}
+                                {% if profile_form.date_of_birth.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ profile_form.date_of_birth.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ profile_form.profile_picture.id_for_label }}" class="form-label">
+                                <i class="fas fa-image"></i> Profile Picture
+                            </label>
+                            {{ profile_form.profile_picture }}
+                            {% if profile_form.profile_picture.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ profile_form.profile_picture.errors.0 }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Upload a profile picture (JPG, PNG, GIF up to 5MB)</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ profile_form.address.id_for_label }}" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Address
+                            </label>
+                            {{ profile_form.address }}
+                            {% if profile_form.address.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ profile_form.address.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ profile_form.bio.id_for_label }}" class="form-label">
+                                <i class="fas fa-info-circle"></i> Bio
+                            </label>
+                            {{ profile_form.bio }}
+                            {% if profile_form.bio.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ profile_form.bio.errors.0 }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Tell us a bit about yourself (optional)</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="{% url 'authentication:dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

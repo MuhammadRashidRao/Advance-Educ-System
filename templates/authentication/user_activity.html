@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block title %}User Activity - Education System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-history text-primary"></i> Activity Log
+            </h1>
+        </div>
+    </div>
+
+    <!-- Activity Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-sign-in-alt text-primary display-6 mb-3"></i>
+                    <h4 class="card-title">{{ total_logins|default:0 }}</h4>
+                    <p class="card-text text-muted">Total Logins</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-user-edit text-success display-6 mb-3"></i>
+                    <h4 class="card-title">{{ profile_updates|default:0 }}</h4>
+                    <p class="card-text text-muted">Profile Updates</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-key text-warning display-6 mb-3"></i>
+                    <h4 class="card-title">{{ password_changes|default:0 }}</h4>
+                    <p class="card-text text-muted">Password Changes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-exclamation-triangle text-danger display-6 mb-3"></i>
+                    <h4 class="card-title">{{ failed_logins|default:0 }}</h4>
+                    <p class="card-text text-muted">Failed Logins</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Recent Activities</h5>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-light btn-sm" onclick="filterActivities('all')">All</button>
+                        <button type="button" class="btn btn-light btn-sm" onclick="filterActivities('login')">Logins</button>
+                        <button type="button" class="btn btn-light btn-sm" onclick="filterActivities('security')">Security</button>
+                        <button type="button" class="btn btn-light btn-sm" onclick="filterActivities('profile')">Profile</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if activities %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Activity</th>
+                                    <th>Description</th>
+                                    <th>IP Address</th>
+                                    <th>Device</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in activities %}
+                                <tr class="activity-row" data-type="{{ activity.activity_type }}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if activity.activity_type == 'login' %}
+                                                <i class="fas fa-sign-in-alt text-success me-2"></i>
+                                            {% elif activity.activity_type == 'logout' %}
+                                                <i class="fas fa-sign-out-alt text-warning me-2"></i>
+                                            {% elif activity.activity_type == 'password_change' %}
+                                                <i class="fas fa-key text-danger me-2"></i>
+                                            {% elif activity.activity_type == 'profile_update' %}
+                                                <i class="fas fa-user-edit text-info me-2"></i>
+                                            {% elif activity.activity_type == 'email_verification' %}
+                                                <i class="fas fa-envelope text-primary me-2"></i>
+                                            {% elif activity.activity_type == 'two_factor_enabled' %}
+                                                <i class="fas fa-mobile-alt text-success me-2"></i>
+                                            {% elif activity.activity_type == 'two_factor_disabled' %}
+                                                <i class="fas fa-mobile-alt text-danger me-2"></i>
+                                            {% else %}
+                                                <i class="fas fa-info-circle text-secondary me-2"></i>
+                                            {% endif %}
+                                            <span class="badge bg-{{ activity.activity_type|activity_badge_color }}">
+                                                {{ activity.get_activity_type_display }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>{{ activity.description }}</td>
+                                    <td>
+                                        <code>{{ activity.ip_address }}</code>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ activity.user_agent|truncatechars:50 }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <small>{{ activity.timestamp|date:"M j, Y" }}</small>
+                                            <small class="text-muted">{{ activity.timestamp|time:"g:i A" }}</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                    <nav aria-label="Activity pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-inbox display-4"></i>
+                        <h5 class="mt-3">No Activity Found</h5>
+                        <p>Your activity log is empty. Start using the system to see your activities here.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Timeline -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Activity Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% for activity in activities|slice:":10" %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                {% if activity.activity_type == 'login' %}
+                                    <i class="fas fa-sign-in-alt text-success"></i>
+                                {% elif activity.activity_type == 'logout' %}
+                                    <i class="fas fa-sign-out-alt text-warning"></i>
+                                {% elif activity.activity_type == 'password_change' %}
+                                    <i class="fas fa-key text-danger"></i>
+                                {% elif activity.activity_type == 'profile_update' %}
+                                    <i class="fas fa-user-edit text-info"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle text-secondary"></i>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">{{ activity.get_activity_type_display }}</h6>
+                                <p class="mb-1">{{ activity.description }}</p>
+                                <small class="text-muted">
+                                    {{ activity.timestamp|timesince }} ago • {{ activity.ip_address }}
+                                </small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #007bff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-left: 20px;
+}
+</style>
+
+<script>
+function filterActivities(type) {
+    const rows = document.querySelectorAll('.activity-row');
+    
+    rows.forEach(row => {
+        if (type === 'all' || row.dataset.type === type) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %} 
