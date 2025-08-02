@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Security Settings - Education System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-shield-alt text-primary"></i> Security Settings
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Security Settings Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> Security Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Password Change Section -->
+                        <div class="mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-key"></i> Change Password
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="current_password" class="form-label">Current Password</label>
+                                    {{ form.current_password }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="new_password1" class="form-label">New Password</label>
+                                    {{ form.new_password1 }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="new_password2" class="form-label">Confirm New Password</label>
+                                    {{ form.new_password2 }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Two-Factor Authentication -->
+                        <div class="mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-mobile-alt"></i> Two-Factor Authentication
+                            </h6>
+                            <div class="form-check form-switch">
+                                {{ form.two_factor_enabled }}
+                                <label class="form-check-label" for="{{ form.two_factor_enabled.id_for_label }}">
+                                    Enable Two-Factor Authentication
+                                </label>
+                            </div>
+                            <small class="text-muted">
+                                Add an extra layer of security to your account by requiring a verification code in addition to your password.
+                            </small>
+                        </div>
+
+                        <hr>
+
+                        <!-- Session Management -->
+                        <div class="mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-users"></i> Session Management
+                            </h6>
+                            <div class="form-check form-switch">
+                                {{ form.logout_all_sessions }}
+                                <label class="form-check-label" for="{{ form.logout_all_sessions.id_for_label }}">
+                                    Logout from all devices
+                                </label>
+                            </div>
+                            <small class="text-muted">
+                                This will terminate all active sessions across all devices. You'll need to log in again.
+                            </small>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Security Settings
+                            </button>
+                            <a href="{% url 'authentication:dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Status -->
+        <div class="col-lg-4">
+            <!-- Security Score -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-chart-line"></i> Security Score</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-4 text-success mb-2">85%</div>
+                    <p class="text-muted">Your account security is good</p>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                    </div>
+                    <small class="text-muted">Based on password strength, 2FA, and recent activity</small>
+                </div>
+            </div>
+
+            <!-- Security Checklist -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-check-circle"></i> Security Checklist</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <span>Strong password</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-times text-danger me-2"></i>
+                        <span>Two-factor authentication</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <span>Email verified</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-times text-danger me-2"></i>
+                        <span>Phone verified</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Security Events -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Recent Security Events</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <small class="text-muted">2 hours ago</small>
+                        <div>Login from new device</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">1 day ago</small>
+                        <div>Password changed</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">3 days ago</small>
+                        <div>Profile updated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Sessions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-desktop"></i> Active Sessions</h5>
+                </div>
+                <div class="card-body">
+                    {% if active_sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Device</th>
+                                    <th>IP Address</th>
+                                    <th>Location</th>
+                                    <th>Last Activity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in active_sessions %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-desktop me-2"></i>
+                                        Current Session
+                                    </td>
+                                    <td>{{ session.ip_address }}</td>
+                                    <td>Unknown</td>
+                                    <td>{{ session.last_activity|timesince }} ago</td>
+                                    <td>
+                                        <span class="badge bg-success">Current</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle display-4"></i>
+                        <p class="mt-3">No active sessions found</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

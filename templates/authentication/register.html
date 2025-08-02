@@ -1,0 +1,701 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account - Education System{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    background: #00ffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+}
+
+.registration-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    max-height: 95vh;
+    overflow-y: auto;
+}
+
+.registration-card::-webkit-scrollbar {
+    width: 6px;
+}
+
+.registration-card::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.registration-card::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 3px;
+}
+
+.registration-card::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
+
+.registration-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+    background-size: 200% 100%;
+    animation: gradient-shift 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.form-header {
+    text-align: center;
+    padding: 1rem 2rem 0.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.form-header .icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.form-header .icon i {
+    font-size: 1.25rem;
+    color: white;
+}
+
+.form-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.form-header p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.form-body {
+    padding: 1rem 2rem;
+}
+
+.form-group {
+    margin-bottom: 0.75rem;
+    position: relative;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.form-label i {
+    margin-right: 0.5rem;
+    color: #667eea;
+    width: 14px;
+}
+
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: #fff;
+    width: 100%;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    transform: translateY(-1px);
+}
+
+.form-control:hover {
+    border-color: #667eea;
+}
+
+.password-requirements {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    border-left: 3px solid #667eea;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 0.75rem;
+}
+
+.password-requirements li {
+    color: #6c757d;
+    font-size: 0.7rem;
+    margin-bottom: 0.1rem;
+}
+
+.role-selector {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.role-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.role-option {
+    position: relative;
+}
+
+.role-option input[type="radio"] {
+    display: none;
+}
+
+.role-option label {
+    display: block;
+    padding: 0.5rem 0.25rem;
+    text-align: center;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+.role-option input[type="radio"]:checked + label {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+}
+
+.checkbox-group {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.form-check {
+    margin-bottom: 0.25rem;
+}
+
+.form-check:last-child {
+    margin-bottom: 0;
+}
+
+.form-check-input {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+.form-check-label {
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.85rem;
+}
+
+.btn-register {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-register::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-register:hover::before {
+    left: 100%;
+}
+
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.login-link {
+    text-align: center;
+    padding: 0.75rem 2rem;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.login-link a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+    color: #764ba2;
+}
+
+.floating-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.shape {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape:nth-child(1) {
+    width: 60px;
+    height: 60px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.shape:nth-child(2) {
+    width: 80px;
+    height: 80px;
+    top: 60%;
+    right: 10%;
+    animation-delay: 2s;
+}
+
+.shape:nth-child(3) {
+    width: 40px;
+    height: 40px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(180deg); }
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 0.5rem;
+    }
+    
+    .registration-card {
+        margin: 0;
+        max-width: 100%;
+        max-height: 95vh;
+    }
+    
+    .form-body {
+        padding: 1rem 1.5rem;
+    }
+    
+    .role-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .form-header {
+        padding: 1rem 1.5rem 0.75rem;
+    }
+    
+    .login-link {
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 0.25rem;
+    }
+    
+    .form-body {
+        padding: 0.75rem 1rem;
+    }
+    
+    .role-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-header {
+        padding: 0.75rem 1rem 0.5rem;
+    }
+    
+    .login-link {
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Compact form for smaller screens */
+@media (max-height: 700px) {
+    .auth-container {
+        padding: 0.5rem 0;
+    }
+    
+    .registration-card {
+        max-height: 95vh;
+    }
+    
+    .form-header {
+        padding: 1rem 2rem 0.5rem;
+    }
+    
+    .form-header .icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .form-header .icon i {
+        font-size: 1.25rem;
+    }
+    
+    .form-header h2 {
+        font-size: 1.25rem;
+    }
+    
+    .form-body {
+        padding: 1rem 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+    
+    .role-selector {
+        padding: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .checkbox-group {
+        padding: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    
+    <div class="registration-card">
+        <div class="form-header">
+            <div class="icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2 class="mb-2">Create Account</h2>
+            <p class="text-muted mb-0">Join our educational community</p>
+        </div>
+        
+        <div class="form-body">
+            <form method="post" id="registration-form">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Please correct the errors below:</strong>
+                    <ul class="mb-0 mt-2">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+
+                <!-- Name Fields -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                <i class="fas fa-user"></i> First Name
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.first_name.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                <i class="fas fa-user"></i> Last Name
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.last_name.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Username and Email in one row -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                <i class="fas fa-at"></i> Username
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.username.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                <i class="fas fa-envelope"></i> Email
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.email.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role Selection -->
+                <div class="role-selector">
+                    <label class="form-label">
+                        <i class="fas fa-users"></i> Select Your Role
+                    </label>
+                    <div class="role-options">
+                        <div class="role-option">
+                            <input type="radio" name="role" value="student" id="role-student" checked>
+                            <label for="role-student">
+                                <i class="fas fa-graduation-cap"></i><br>
+                                Student
+                            </label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" name="role" value="teacher" id="role-teacher">
+                            <label for="role-teacher">
+                                <i class="fas fa-chalkboard-teacher"></i><br>
+                                Teacher
+                            </label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" name="role" value="parent" id="role-parent">
+                            <label for="role-parent">
+                                <i class="fas fa-user-friends"></i><br>
+                                Parent
+                            </label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" name="role" value="guest" id="role-guest">
+                            <label for="role-guest">
+                                <i class="fas fa-user"></i><br>
+                                Guest
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Fields -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label">
+                                <i class="fas fa-lock"></i> Password
+                            </label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.password1.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label">
+                                <i class="fas fa-lock"></i> Confirm Password
+                            </label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.password2.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Requirements (compact) -->
+                <div class="password-requirements">
+                    <small class="text-muted"><strong>Password Requirements:</strong></small>
+                    <ul>
+                        <li>At least 8 characters</li>
+                        <li>Not too similar to personal info</li>
+                        <li>Not commonly used</li>
+                        <li>Not entirely numeric</li>
+                    </ul>
+                </div>
+
+                <!-- Terms and Newsletter -->
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        {{ form.terms_accepted }}
+                        <label class="form-check-label" for="{{ form.terms_accepted.id_for_label }}">
+                            I agree to the <a href="#" class="text-primary">Terms</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        {{ form.newsletter_subscription }}
+                        <label class="form-check-label" for="{{ form.newsletter_subscription.id_for_label }}">
+                            Subscribe to newsletter for updates
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-register">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+        </div>
+        
+        <div class="login-link">
+            <p class="mb-0">Already have an account? <a href="{% url 'authentication:login' %}">Sign In</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password strength indicator
+    const passwordInput = document.getElementById('{{ form.password1.id_for_label }}');
+    const confirmPasswordInput = document.getElementById('{{ form.password2.id_for_label }}');
+    
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/)) strength++;
+        if (password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^a-zA-Z0-9]/)) strength++;
+        return strength;
+    }
+    
+    function updatePasswordStrength(password) {
+        const strength = checkPasswordStrength(password);
+        const requirements = document.querySelector('.password-requirements');
+        
+        if (password.length > 0) {
+            requirements.style.borderLeftColor = strength >= 4 ? '#28a745' : strength >= 3 ? '#ffc107' : '#dc3545';
+        } else {
+            requirements.style.borderLeftColor = '#667eea';
+        }
+    }
+    
+    passwordInput.addEventListener('input', function() {
+        updatePasswordStrength(this.value);
+    });
+    
+    // Confirm password validation
+    confirmPasswordInput.addEventListener('input', function() {
+        const password = passwordInput.value;
+        const confirmPassword = this.value;
+        
+        if (confirmPassword.length > 0) {
+            if (password === confirmPassword) {
+                this.style.borderColor = '#28a745';
+            } else {
+                this.style.borderColor = '#dc3545';
+            }
+        } else {
+            this.style.borderColor = '#e9ecef';
+        }
+    });
+    
+    // Form submission animation
+    const form = document.getElementById('registration-form');
+    form.addEventListener('submit', function() {
+        const button = document.querySelector('.btn-register');
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+        button.disabled = true;
+    });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,701 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Session - Teacher Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.live-session-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 1rem 0;
+}
+
+.session-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.session-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.session-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.session-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #28a745;
+    color: white;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.session-status.live {
+    background: #dc3545;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.session-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-session {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.btn-primary-session {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary-session:hover {
+    background: #5a6fd8;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-success-session {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success-session:hover {
+    background: #218838;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-danger-session {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger-session:hover {
+    background: #c82333;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-warning-session {
+    background: #ffc107;
+    color: #212529;
+}
+
+.btn-warning-session:hover {
+    background: #e0a800;
+    color: #212529;
+    transform: translateY(-2px);
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.video-container {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-main {
+    flex: 1;
+    background: #000;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.video-main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    opacity: 0.8;
+}
+
+.video-main .content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.video-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.chat-container, .participants-container, .tools-container {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chat-messages {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+.message {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: white;
+    border-left: 3px solid #667eea;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+}
+
+.message-author {
+    font-weight: 600;
+    color: #667eea;
+    font-size: 0.85rem;
+}
+
+.message-time {
+    color: #666;
+    font-size: 0.75rem;
+}
+
+.message-content {
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.chat-input {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.chat-input button {
+    padding: 0.5rem 1rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.chat-input button:hover {
+    background: #5a6fd8;
+}
+
+.participants-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.participant {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    background: #f8f9fa;
+    transition: background 0.3s ease;
+}
+
+.participant:hover {
+    background: #e9ecef;
+}
+
+.participant-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.participant-info {
+    flex: 1;
+}
+
+.participant-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.participant-role {
+    color: #666;
+    font-size: 0.75rem;
+}
+
+.participant-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #28a745;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.tool-btn {
+    padding: 0.75rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+    color: #333;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.tool-btn:hover {
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+}
+
+.tool-btn i {
+    font-size: 1.2rem;
+}
+
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .live-session-container {
+        padding: 0.5rem 0;
+    }
+    
+    .session-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .session-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .session-controls {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .video-container {
+        padding: 1rem;
+        min-height: 400px;
+    }
+    
+    .video-controls {
+        gap: 0.5rem;
+    }
+    
+    .btn-session {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .sidebar {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="live-session-container">
+    <div class="container">
+        <!-- Session Header -->
+        <div class="session-header">
+            <div class="session-info">
+                <div>
+                    <h1 class="session-title">Live Session: {{ session_id|default:"Mathematics Class" }}</h1>
+                    <p class="text-muted mb-0">Started by {{ user.get_full_name|default:user.username }}</p>
+                </div>
+                <div class="session-status live">
+                    <i class="fas fa-circle"></i>
+                    LIVE
+                </div>
+            </div>
+            
+            <div class="session-controls">
+                <button class="btn-session btn-success-session" id="startSession">
+                    <i class="fas fa-play"></i> Start Session
+                </button>
+                <button class="btn-session btn-warning-session" id="shareScreen">
+                    <i class="fas fa-desktop"></i> Share Screen
+                </button>
+                <button class="btn-session btn-primary-session" id="recordSession">
+                    <i class="fas fa-record-vinyl"></i> Record
+                </button>
+                <button class="btn-session btn-danger-session" id="endSession">
+                    <i class="fas fa-stop"></i> End Session
+                </button>
+                <a href="{% url 'authentication:teacher_dashboard' %}" class="btn-session btn-primary-session">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Video Container -->
+            <div class="video-container">
+                <div class="video-main">
+                    <div class="content">
+                        <i class="fas fa-video fa-3x mb-3"></i>
+                        <p>Video feed will appear here</p>
+                        <p class="text-muted">Click "Start Session" to begin</p>
+                    </div>
+                </div>
+                
+                <div class="video-controls">
+                    <button class="btn-session btn-primary-session" id="toggleVideo">
+                        <i class="fas fa-video"></i> Video
+                    </button>
+                    <button class="btn-session btn-primary-session" id="toggleAudio">
+                        <i class="fas fa-microphone"></i> Audio
+                    </button>
+                    <button class="btn-session btn-warning-session" id="toggleChat">
+                        <i class="fas fa-comments"></i> Chat
+                    </button>
+                    <button class="btn-session btn-primary-session" id="toggleParticipants">
+                        <i class="fas fa-users"></i> Participants
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Chat Container -->
+                <div class="chat-container">
+                    <h3 class="section-title">
+                        <i class="fas fa-comments"></i> Chat
+                    </h3>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message">
+                            <div class="message-header">
+                                <span class="message-author">System</span>
+                                <span class="message-time">Just now</span>
+                            </div>
+                            <div class="message-content">Welcome to the live session! You can start chatting with your students.</div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Type your message..." maxlength="200">
+                        <button id="sendMessage">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Participants Container -->
+                <div class="participants-container">
+                    <h3 class="section-title">
+                        <i class="fas fa-users"></i> Participants (3)
+                    </h3>
+                    <div class="participants-list">
+                        <div class="participant">
+                            <div class="participant-avatar">T</div>
+                            <div class="participant-info">
+                                <div class="participant-name">{{ user.get_full_name|default:user.username }}</div>
+                                <div class="participant-role">Teacher (Host)</div>
+                            </div>
+                            <div class="participant-status"></div>
+                        </div>
+                        <div class="participant">
+                            <div class="participant-avatar">S</div>
+                            <div class="participant-info">
+                                <div class="participant-name">Sarah Johnson</div>
+                                <div class="participant-role">Student</div>
+                            </div>
+                            <div class="participant-status"></div>
+                        </div>
+                        <div class="participant">
+                            <div class="participant-avatar">M</div>
+                            <div class="participant-info">
+                                <div class="participant-name">Mike Davis</div>
+                                <div class="participant-role">Student</div>
+                            </div>
+                            <div class="participant-status"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools Container -->
+                <div class="tools-container">
+                    <h3 class="section-title">
+                        <i class="fas fa-tools"></i> Tools
+                    </h3>
+                    <div class="tools-grid">
+                        <a href="#" class="tool-btn" id="whiteboard">
+                            <i class="fas fa-paint-brush"></i>
+                            Whiteboard
+                        </a>
+                        <a href="#" class="tool-btn" id="polls">
+                            <i class="fas fa-poll"></i>
+                            Polls
+                        </a>
+                        <a href="#" class="tool-btn" id="breakout">
+                            <i class="fas fa-users"></i>
+                            Breakout Rooms
+                        </a>
+                        <a href="#" class="tool-btn" id="files">
+                            <i class="fas fa-file-upload"></i>
+                            Share Files
+                        </a>
+                        <a href="#" class="tool-btn" id="notes">
+                            <i class="fas fa-sticky-note"></i>
+                            Notes
+                        </a>
+                        <a href="#" class="tool-btn" id="settings">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let sessionActive = false;
+    let videoEnabled = false;
+    let audioEnabled = false;
+    
+    // Session Controls
+    document.getElementById('startSession').addEventListener('click', function() {
+        sessionActive = !sessionActive;
+        this.innerHTML = sessionActive ? 
+            '<i class="fas fa-pause"></i> Pause Session' : 
+            '<i class="fas fa-play"></i> Start Session';
+        
+        if (sessionActive) {
+            document.querySelector('.session-status').classList.add('live');
+            addChatMessage('System', 'Session started successfully!');
+        } else {
+            document.querySelector('.session-status').classList.remove('live');
+            addChatMessage('System', 'Session paused.');
+        }
+    });
+    
+    // Video Controls
+    document.getElementById('toggleVideo').addEventListener('click', function() {
+        videoEnabled = !videoEnabled;
+        this.innerHTML = videoEnabled ? 
+            '<i class="fas fa-video-slash"></i> Stop Video' : 
+            '<i class="fas fa-video"></i> Video';
+        this.classList.toggle('btn-danger-session', videoEnabled);
+    });
+    
+    document.getElementById('toggleAudio').addEventListener('click', function() {
+        audioEnabled = !audioEnabled;
+        this.innerHTML = audioEnabled ? 
+            '<i class="fas fa-microphone-slash"></i> Mute' : 
+            '<i class="fas fa-microphone"></i> Audio';
+        this.classList.toggle('btn-danger-session', audioEnabled);
+    });
+    
+    // Chat functionality
+    document.getElementById('sendMessage').addEventListener('click', sendChatMessage);
+    document.getElementById('chatInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendChatMessage();
+        }
+    });
+    
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (message) {
+            addChatMessage('{{ user.get_full_name|default:user.username }}', message);
+            input.value = '';
+        }
+    }
+    
+    function addChatMessage(author, content) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+        
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        
+        messageDiv.innerHTML = `
+            <div class="message-header">
+                <span class="message-author">${author}</span>
+                <span class="message-time">${timeString}</span>
+            </div>
+            <div class="message-content">${content}</div>
+        `;
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Tool buttons
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const toolName = this.id;
+            addChatMessage('System', `${toolName.charAt(0).toUpperCase() + toolName.slice(1)} tool activated.`);
+        });
+    });
+    
+    // Screen sharing
+    document.getElementById('shareScreen').addEventListener('click', function() {
+        addChatMessage('System', 'Screen sharing feature activated.');
+    });
+    
+    // Recording
+    document.getElementById('recordSession').addEventListener('click', function() {
+        const isRecording = this.innerHTML.includes('Stop Recording');
+        this.innerHTML = isRecording ? 
+            '<i class="fas fa-record-vinyl"></i> Record' : 
+            '<i class="fas fa-stop"></i> Stop Recording';
+        this.classList.toggle('btn-danger-session', !isRecording);
+        
+        addChatMessage('System', isRecording ? 'Recording stopped.' : 'Recording started.');
+    });
+    
+    // End session
+    document.getElementById('endSession').addEventListener('click', function() {
+        if (confirm('Are you sure you want to end this session?')) {
+            addChatMessage('System', 'Session ended by teacher.');
+            setTimeout(() => {
+                window.location.href = '{% url "authentication:teacher_dashboard" %}';
+            }, 2000);
+        }
+    });
+    
+    // Simulate incoming messages
+    setInterval(() => {
+        if (sessionActive && Math.random() < 0.3) {
+            const students = ['Sarah Johnson', 'Mike Davis', 'Emma Wilson'];
+            const messages = [
+                'Great explanation!',
+                'Can you repeat that?',
+                'I have a question...',
+                'This is very helpful!',
+                'I understand now!'
+            ];
+            
+            const randomStudent = students[Math.floor(Math.random() * students.length)];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            addChatMessage(randomStudent, randomMessage);
+        }
+    }, 10000);
+});
+</script>
+{% endblock %} 
